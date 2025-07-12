@@ -1,35 +1,34 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Globe, CheckCircle, TrendingUp, Clock, Target, Zap, Shield, Users } from "lucide-react";
-
 interface ToolDetailModalProps {
   tool: any;
   isOpen: boolean;
   onClose: () => void;
 }
-
-const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
+const ToolDetailModal = ({
+  tool,
+  isOpen,
+  onClose
+}: ToolDetailModalProps) => {
   if (!tool) return null;
-
-  const features = [
-    "Content Generation",
-    "Data Analysis", 
-    "Code Assistance",
-    "Customer Support"
-  ];
-
-  const integrations = [
-    { name: "Slack", icon: "💬" },
-    { name: "Microsoft Teams", icon: "👥" },
-    { name: "Zapier", icon: "⚡" },
-    { name: "API", icon: "🔌" }
-  ];
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+  const features = ["Content Generation", "Data Analysis", "Code Assistance", "Customer Support"];
+  const integrations = [{
+    name: "Slack",
+    icon: "💬"
+  }, {
+    name: "Microsoft Teams",
+    icon: "👥"
+  }, {
+    name: "Zapier",
+    icon: "⚡"
+  }, {
+    name: "API",
+    icon: "🔌"
+  }];
+  return <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
         {/* Header Section - Identity */}
         <DialogHeader className="border-b p-6 bg-gray-50">
@@ -41,22 +40,15 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
               <div>
                 <div className="flex items-center space-x-3 mb-2">
                   <DialogTitle className="text-2xl font-bold">{tool.name}</DialogTitle>
-                  {tool.match && (
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  {tool.match && <Badge variant="secondary" className="bg-green-100 text-green-800">
                       {tool.match}% match
-                    </Badge>
-                  )}
+                    </Badge>}
                 </div>
                 <div className="flex items-center space-x-3">
                   <Badge variant="outline">{tool.category}</Badge>
                   <div className="flex items-center space-x-1">
                     <span className="text-sm text-gray-500">Complexity:</span>
-                    {[...Array(5)].map((_, i) => (
-                      <div 
-                        key={i} 
-                        className={`w-2 h-2 rounded-full ${i < tool.complexity ? 'bg-[#305CDE]' : 'bg-gray-200'}`} 
-                      />
-                    ))}
+                    {[...Array(5)].map((_, i) => <div key={i} className={`w-2 h-2 rounded-full ${i < tool.complexity ? 'bg-[#305CDE]' : 'bg-gray-200'}`} />)}
                   </div>
                 </div>
               </div>
@@ -96,32 +88,16 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
                 </div>
 
                 {/* User Rating */}
-                <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center space-x-1">
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          size={20} 
-                          className={i < Math.floor(tool.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} 
-                        />
-                      ))}
-                    </div>
-                    <span className="font-semibold">({tool.rating})</span>
-                  </div>
-                  <span className="text-gray-600">User Rating</span>
-                </div>
+                
 
                 {/* Key Features */}
                 <div>
                   <h3 className="text-xl font-semibold mb-4">Key Features</h3>
                   <div className="grid grid-cols-2 gap-3">
-                    {features.map((feature, index) => (
-                      <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                    {features.map((feature, index) => <div key={index} className="flex items-center space-x-2 p-3 bg-gray-50 rounded-lg">
                         <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -142,13 +118,7 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
                 <div>
                   <h3 className="text-xl font-semibold mb-4">Why This Fits Your Needs</h3>
                   <div className="space-y-3">
-                    <div className="flex items-start space-x-3 p-4 bg-green-50 rounded-lg">
-                      <Target className="w-6 h-6 text-green-500 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <div className="font-medium">Perfect Match for Financial Teams</div>
-                        <div className="text-gray-600 text-sm">Specifically designed for financial workflows and compliance requirements</div>
-                      </div>
-                    </div>
+                    
                     <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
                       <Zap className="w-6 h-6 text-blue-500 mt-0.5 flex-shrink-0" />
                       <div>
@@ -160,16 +130,7 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
                 </div>
 
                 {/* Implementation Complexity */}
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Implementation</h3>
-                  <div className="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg">
-                    <Clock className="w-6 h-6 text-yellow-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="font-medium">Implementation Complexity</div>
-                      <div className="text-gray-600 text-sm">Medium complexity - Expected setup time: 2-4 weeks</div>
-                    </div>
-                  </div>
-                </div>
+                
 
                 {/* Estimated ROI */}
                 <div>
@@ -190,12 +151,10 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
                 <div>
                   <h3 className="text-xl font-semibold mb-4">Available Integrations</h3>
                   <div className="grid grid-cols-2 gap-3">
-                    {integrations.map((integration, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="text-2xl">{integration.icon}</span>
+                    {integrations.map((integration, index) => <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        
                         <span className="font-medium">{integration.name}</span>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -215,27 +174,7 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
                 </div>
 
                 {/* Additional Specs */}
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Technical Specifications</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-600">Security Compliance</span>
-                      <span className="font-medium">SOC 2, GDPR, ISO 27001</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-600">Data Residency</span>
-                      <span className="font-medium">US, EU, Asia-Pacific</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-600">API Rate Limits</span>
-                      <span className="font-medium">10,000 requests/hour</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span className="text-gray-600">Uptime SLA</span>
-                      <span className="font-medium">99.9%</span>
-                    </div>
-                  </div>
-                </div>
+                
               </TabsContent>
             </div>
           </Tabs>
@@ -251,8 +190,6 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
           </div>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default ToolDetailModal;
