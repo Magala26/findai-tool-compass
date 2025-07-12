@@ -64,9 +64,12 @@ const questions = [
   }
 ];
 
+const QUESTIONNAIRE_WEBHOOK_URL = 'https://primeoo.app.n8n.cloud/webhook-test/d5261785-726e-41b0-aa78-6a9951168631';
+
 const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [answers, setAnswers] = useState<Record<number, any>>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAnswer = (questionId: number, answer: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
@@ -100,9 +103,60 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
     }
   };
 
-  const handleGetResults = () => {
-    onComplete(answers);
-    onClose();
+  const sendToWebhook = async (data: any) => {
+    try {
+      const response = await fetch(QUESTIONNAIRE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          timestamp: new Date().toISOString(),
+          ...data
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send data to webhook');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error sending data to webhook:', error);
+      throw error;
+    }
+  };
+
+  const handleGetResults = async () => {
+    setIsLoading(true);
+    
+    // Format the answers for the webhook
+    const formattedAnswers = {
+      whoNeedsTool: answers[1] || null,
+      goals: answers[2] || null,
+      budget: answers[3] || 0,
+      integrations: answers[4] || [],
+    };
+
+    try {
+      // Send data to webhook
+      await sendToWebhook(formattedAnswers);
+      
+      // Simulate processing time (3.5 seconds)
+      await new Promise(resolve => setTimeout(resolve, 3500));
+      
+      // Complete the questionnaire
+      onComplete(answers);
+      onClose();
+    } catch (error) {
+      // Handle error (you might want to show an error message to the user)
+      console.error('Error processing results:', error);
+      // Still continue to show results even if webhook fails
+      onComplete(answers);
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatBudget = (value: number) => {
@@ -301,9 +355,18 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                 ) : (
                   <Button 
                     onClick={handleGetResults}
-                    className="bg-[#305CDE] hover:bg-[#2847b8]"
+                    disabled={isLoading}
+                    className="bg-[#305CDE] hover:bg-[#2847b8] min-w-[120px]"
                   >
-                    Get Results
+                    {isLoading ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </div>
+                    ) : 'Get Results'}
                   </Button>
                 )}
               </div>
