@@ -81,8 +81,8 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 bg-transparent border-none shadow-none">
-        <div className="flex items-center justify-center min-h-screen p-4">
-          <Card className="w-full max-w-2xl rounded-[20px] shadow-2xl border-0">
+        <div className="flex items-center justify-center min-h-screen py-6">
+          <Card className="w-full max-w-2xl rounded-[20px] shadow-2xl border-0 my-6">
             <DialogHeader className="p-8 pb-4">
               <DialogTitle className="text-center text-2xl font-bold text-gray-900">
                 Find Your Perfect AI Tool
@@ -92,7 +92,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
               </p>
             </DialogHeader>
             
-            <CardContent className="p-8 pt-4">
+            <CardContent className="px-8 pb-8 pt-4">
               {/* Progress bar */}
               <div className="flex items-center justify-center mb-8">
                 {[1, 2, 3, 4].map((step) => (
@@ -123,17 +123,17 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                     {currentQuestion?.title}
                   </h3>
                   
-                  {/* Question 1: Multiple Choice */}
+                  {/* Question 1: Multiple Choice with Pills */}
                   {currentQuestion?.type === "multiple-choice" && (
-                    <div className="space-y-3">
+                    <div className="flex flex-wrap gap-3 justify-center">
                       {currentQuestion?.options?.map((option, index) => (
                         <button
                           key={index}
                           onClick={() => handleAnswer(currentStep, option)}
-                          className={`w-full p-4 text-left rounded-lg border transition-all ${
+                          className={`px-6 py-3 rounded-full border-2 transition-all font-medium ${
                             answers[currentStep] === option
-                              ? 'border-[#305CDE] bg-blue-50 text-[#305CDE]'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-[#305CDE] bg-[#305CDE] text-white shadow-lg'
+                              : 'border-gray-200 hover:border-[#305CDE] hover:bg-blue-50 text-gray-700'
                           }`}
                         >
                           {option}
@@ -149,7 +149,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                         placeholder={currentQuestion?.placeholder}
                         value={answers[currentStep] || ""}
                         onChange={(e) => handleAnswer(currentStep, e.target.value)}
-                        className="min-h-[150px] resize-none focus:ring-2 focus:ring-[#305CDE] focus:border-[#305CDE]"
+                        className="min-h-[150px] resize-none focus:ring-2 focus:ring-[#305CDE] focus:border-[#305CDE] rounded-xl"
                       />
                     </div>
                   )}
@@ -164,7 +164,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                           max={currentQuestion?.max}
                           min={currentQuestion?.min}
                           step={currentQuestion?.step}
-                          className="w-full"
+                          className="w-full [&_[role=slider]]:bg-[#305CDE] [&_[role=slider]]:border-[#305CDE]"
                         />
                         <div className="flex justify-between text-sm text-gray-500 mt-2">
                           <span>Free</span>
