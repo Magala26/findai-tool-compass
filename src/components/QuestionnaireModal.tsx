@@ -1,0 +1,187 @@
+
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+interface QuestionnaireModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onComplete: (answers: any) => void;
+}
+
+const questions = [
+  {
+    id: 1,
+    title: "What's your primary business focus?",
+    options: [
+      "Content Creation & Marketing",
+      "Data Analysis & Insights", 
+      "Customer Support & Communication",
+      "Productivity & Automation",
+      "Design & Creative Work"
+    ]
+  },
+  {
+    id: 2,
+    title: "What's your team size?",
+    options: [
+      "Just me (Solo)",
+      "Small team (2-10)",
+      "Medium team (11-50)",
+      "Large team (51-200)",
+      "Enterprise (200+)"
+    ]
+  },
+  {
+    id: 3,
+    title: "What's your budget range?",
+    options: [
+      "Free tools only",
+      "$1-$50/month",
+      "$51-$200/month", 
+      "$201-$500/month",
+      "$500+/month"
+    ]
+  }
+];
+
+const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalProps) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+
+  const handleAnswer = (questionId: number, answer: string) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleGetResults = () => {
+    onComplete(answers);
+    onClose();
+  };
+
+  const currentQuestion = questions.find(q => q.id === currentStep);
+  const isAnswered = answers[currentStep];
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold text-gray-900">
+            Find Your Perfect AI Tool
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="py-6">
+          {/* Progress bar */}
+          <div className="flex items-center justify-center mb-8">
+            {[1, 2, 3, 4].map((step) => (
+              <div key={step} className="flex items-center">
+                <div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    step <= currentStep 
+                      ? 'bg-[#305CDE] text-white' 
+                      : 'bg-gray-200 text-gray-600'
+                  }`}
+                >
+                  {step}
+                </div>
+                {step < 4 && (
+                  <div 
+                    className={`w-16 h-1 mx-2 ${
+                      step < currentStep ? 'bg-[#305CDE]' : 'bg-gray-200'
+                    }`} 
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {currentStep <= 3 ? (
+            <Card>
+              <CardContent className="p-8">
+                <h3 className="text-xl font-semibold text-center mb-6">
+                  {currentQuestion?.title}
+                </h3>
+                <div className="space-y-3">
+                  {currentQuestion?.options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswer(currentStep, option)}
+                      className={`w-full p-4 text-left rounded-lg border transition-all ${
+                        answers[currentStep] === option
+                          ? 'border-[#305CDE] bg-blue-50 text-[#305CDE]'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8">
+                <h3 className="text-xl font-semibold text-center mb-6">
+                  Review Your Answers
+                </h3>
+                <div className="space-y-4">
+                  {questions.map((question) => (
+                    <div key={question.id} className="border-b pb-4">
+                      <p className="font-medium text-gray-900 mb-2">{question.title}</p>
+                      <p className="text-[#305CDE]">{answers[question.id] || 'Not answered'}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="flex justify-between mt-8">
+            <Button 
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Previous
+            </Button>
+            
+            {currentStep < 4 ? (
+              <Button 
+                onClick={handleNext}
+                disabled={!isAnswered}
+                className="bg-[#305CDE] hover:bg-[#2847b8]"
+              >
+                Next
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button 
+                onClick={handleGetResults}
+                className="bg-[#305CDE] hover:bg-[#2847b8]"
+              >
+                Get Results
+              </Button>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default QuestionnaireModal;
