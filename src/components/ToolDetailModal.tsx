@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Globe, Heart, CheckCircle } from "lucide-react";
+import { Star, Globe, CheckCircle } from "lucide-react";
 
 interface ToolDetailModalProps {
   tool: any;
@@ -143,15 +143,11 @@ const ToolDetailModal = ({ tool, isOpen, onClose }: ToolDetailModalProps) => {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex space-x-4 pt-4 border-t">
-            <Button className="flex-1 bg-[#305CDE] hover:bg-[#2847b8]">
+          {/* Action Button */}
+          <div className="flex justify-center pt-4 border-t">
+            <Button className="bg-[#305CDE] hover:bg-[#2847b8]">
               <Globe className="w-4 h-4 mr-2" />
               Visit Website
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <Heart className="w-4 h-4 mr-2" />
-              Save
             </Button>
           </div>
         </div>

@@ -42,6 +42,25 @@ const questions = [
     min: 0,
     max: 500,
     step: 10
+  },
+  {
+    id: 4,
+    title: "Which integrations do you need? (Optional)",
+    type: "multiple-select",
+    options: [
+      "QuickBooks",
+      "Xero",
+      "SAP",
+      "Oracle",
+      "Excel/Google Sheets",
+      "Salesforce",
+      "HubSpot",
+      "Slack",
+      "Microsoft Teams",
+      "Zapier"
+    ],
+    maxSelections: 2,
+    optional: true
   }
 ];
 
@@ -53,8 +72,24 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
 
+  const handleMultipleSelect = (questionId: number, option: string) => {
+    const currentSelections = answers[questionId] || [];
+    const isSelected = currentSelections.includes(option);
+    const maxSelections = questions.find(q => q.id === questionId)?.maxSelections || 10;
+
+    if (isSelected) {
+      // Remove selection
+      const newSelections = currentSelections.filter((item: string) => item !== option);
+      handleAnswer(questionId, newSelections);
+    } else if (currentSelections.length < maxSelections) {
+      // Add selection
+      const newSelections = [...currentSelections, option];
+      handleAnswer(questionId, newSelections);
+    }
+  };
+
   const handleNext = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -76,7 +111,11 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
   };
 
   const currentQuestion = questions.find(q => q.id === currentStep);
-  const isAnswered = answers[currentStep] !== undefined && answers[currentStep] !== null && answers[currentStep] !== "";
+  const isAnswered = () => {
+    if (currentQuestion?.optional) return true;
+    const answer = answers[currentStep];
+    return answer !== undefined && answer !== null && answer !== "" && (Array.isArray(answer) ? answer.length > 0 : true);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -95,7 +134,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
             <CardContent className="px-8 pb-8 pt-4">
               {/* Progress bar */}
               <div className="flex items-center justify-center mb-8">
-                {[1, 2, 3, 4].map((step) => (
+                {[1, 2, 3, 4, 5].map((step) => (
                   <div key={step} className="flex items-center">
                     <div 
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
@@ -106,7 +145,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                     >
                       {step}
                     </div>
-                    {step < 4 && (
+                    {step < 5 && (
                       <div 
                         className={`w-16 h-1 mx-2 ${
                           step < currentStep ? 'bg-[#305CDE]' : 'bg-gray-200'
@@ -117,7 +156,7 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                 ))}
               </div>
 
-              {currentStep <= 3 ? (
+              {currentStep <= 4 ? (
                 <div className="space-y-6">
                   <h3 className="text-xl font-semibold text-center mb-6">
                     {currentQuestion?.title}
@@ -179,6 +218,42 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                       </div>
                     </div>
                   )}
+
+                  {/* Question 4: Multiple Select Integrations */}
+                  {currentQuestion?.type === "multiple-select" && (
+                    <div className="space-y-4">
+                      <p className="text-center text-gray-600 mb-4">
+                        Select up to {currentQuestion?.maxSelections} integrations (optional)
+                      </p>
+                      <div className="flex flex-wrap gap-3 justify-center">
+                        {currentQuestion?.options?.map((option, index) => {
+                          const currentSelections = answers[currentStep] || [];
+                          const isSelected = currentSelections.includes(option);
+                          const maxReached = currentSelections.length >= (currentQuestion?.maxSelections || 10);
+                          
+                          return (
+                            <button
+                              key={index}
+                              onClick={() => handleMultipleSelect(currentStep, option)}
+                              disabled={!isSelected && maxReached}
+                              className={`px-6 py-3 rounded-full border-2 transition-all font-medium ${
+                                isSelected
+                                  ? 'border-[#305CDE] bg-[#305CDE] text-white shadow-lg'
+                                  : maxReached
+                                  ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                                  : 'border-gray-200 hover:border-[#305CDE] hover:bg-blue-50 text-gray-700'
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="text-center text-sm text-gray-500">
+                        {(answers[currentStep] || []).length} / {currentQuestion?.maxSelections} selected
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -192,6 +267,8 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                         <p className="text-[#305CDE]">
                           {question.type === "slider" 
                             ? formatBudget(answers[question.id] || 0)
+                            : question.type === "multiple-select"
+                            ? (answers[question.id] || []).length > 0 ? (answers[question.id] || []).join(", ") : "None selected"
                             : answers[question.id] || 'Not answered'
                           }
                         </p>
@@ -212,10 +289,10 @@ const QuestionnaireModal = ({ isOpen, onClose, onComplete }: QuestionnaireModalP
                   Previous
                 </Button>
                 
-                {currentStep < 4 ? (
+                {currentStep < 5 ? (
                   <Button 
                     onClick={handleNext}
-                    disabled={!isAnswered}
+                    disabled={!isAnswered()}
                     className="bg-[#305CDE] hover:bg-[#2847b8]"
                   >
                     Next
